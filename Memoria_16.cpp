@@ -3,7 +3,7 @@
 #include <string>
 #include <bitset>
 #include <locale.h>
-#include "Memoria.hpp"
+#include "Memoria_16.hpp"
 
 using namespace std;
 
@@ -19,7 +19,7 @@ void separaBits256B(bitset<16> end_Binario, int &pag, int &des){
     pag = (int)pag_Binario.to_ulong();
 }
 
-void separaBits1KB(std::bitset<16> end_Binario, int &pag, int &des) {
+void separaBits1KB(bitset<16> end_Binario, int &pag, int &des) {
     bitset<6> pag_Binario;  
     bitset<10> des_Binario; 
 
@@ -75,7 +75,7 @@ int main(){
     bool isDebug = true; // Debug do código para ativar em aula caso necessario
 
     do{
-        if isDebug { 
+        if(isDebug) { 
             imprimeTLB();
             imprimeTP();
         }
@@ -195,6 +195,7 @@ int main(){
                     }
                 }
             }
+            
             if (!isDebug) system("clear");
             cout << "Endereço virtual: " << end_String << endl;
             cout << "Página: " << pag << endl;
@@ -210,8 +211,9 @@ int main(){
             cin >> op3;
 
         }else{
-            cout<<"Endereço invalido para uma memoria de 16 bits"<<endl;
+            cout<<"Endereço invalido para 16 bits"<<endl;
         }
     }while(op3 != 2);
+
     return 0;
 }

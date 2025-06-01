@@ -1,8 +1,9 @@
-#ifndef BANCO_HPP
-#define BANCO_HPP
+#ifndef MEMORIA_32_HPP
+#define MEMORIA_32_HPP
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <bitset>
 
 using namespace std;
 
@@ -47,7 +48,6 @@ int procuraTLB(int pag, bool &isTLBHIT){
 }
 
 void insereTLB(int pag, int frame) {
-    // Procura se tem slot vazio na TLB
     for (int i = 0; i < TAM_TLB; i++) {
         if (tlb[i].pagina == -1) {
             tlb[i].pagina = pag;
@@ -56,13 +56,11 @@ void insereTLB(int pag, int frame) {
             return;
         }
     }
-
     int menorT = 0;
     for (int i = 1; i < TAM_TLB; i++) {
-        if (tlb[i].tempo < tlb[menorT].tempo) {
-            menorT = i;
-        }
+        if (tlb[i].tempo < tlb[menorT].tempo) menorT = i;
     }
+    
     tlb[menorT].pagina = pag;
     tlb[menorT].frame = frame;
     tlb[menorT].tempo = temporizador++;
@@ -78,7 +76,7 @@ void imprimeTLB(){
 // Tabela de Paginas
 struct TabelaPaginas {
     bool valid = false, accessed = false;
-    int pagina, frame;
+    int pagina = -1, frame = -1;
 };
 
 TabelaPaginas TP[TAM_TP] = {
@@ -150,18 +148,17 @@ void SwapPageFault(int pag, int frameBS) {
 
     // Se todas estão com accessed = true, escolhe o primeiro e define todos os accessed para false
     if (index == -1){
-        for (int i = 0; i < TAM_TP; i++) {
+        for (int i = 0; i < TAM_TP; i++){
             TP[i].accessed = false;
         }
         index = 0;
-    } 
+    }
 
     TP[index].pagina = pag;
     TP[index].frame = frameBS;
     TP[index].valid = true;
     TP[index].accessed = true;
 }
-
 
 void imprimeTP(){
     cout << "----------------------- TP -----------------------" << endl;
@@ -170,7 +167,6 @@ void imprimeTP(){
     }
 }
 
-// Backing Store
 int lerBackingStore(int paginaBuscada) {
     ifstream arquivo("backing_store.txt");
     string linha;
@@ -179,16 +175,15 @@ int lerBackingStore(int paginaBuscada) {
         stringstream ss(linha);
         string paginaStr, frameStr;
 
-        if (getline(ss, paginaStr, ',') && getline(ss, frameStr)) {
+        if (getline(ss, paginaStr, ',') and getline(ss, frameStr)) {
             int pag = stoi(paginaStr);
             int frame = stoi(frameStr);
-    
+
             if (pag == paginaBuscada) {
                 return frame;
             }
         }
     }
-
     return -1;
 }
 
