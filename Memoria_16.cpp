@@ -72,7 +72,7 @@ int main(){
     string end_String;
     bool isValido = false;
 
-    bool isDebug = true; // Debug do código para ativar em aula caso necessario
+    bool isDebug = false; // Debug do código para ativar em aula caso necessario
 
     do{
         if(isDebug) { 
@@ -158,7 +158,7 @@ int main(){
 
             if(isTLBHIT){
                 acao += "TLB Hit";
-
+                
                 endArq = frame*tam_pagina + des;
                 valor = lerMemoriaFisica(endArq);            
                 
@@ -200,7 +200,7 @@ int main(){
             cout << "Endereço virtual: " << end_String << endl;
             cout << "Página: " << pag << endl;
             cout << "Deslocamento: " << des << endl;
-            cout << "Ação Tomada: " << acao << endl;
+            cout << "Ação tomada: " << acao << endl;
             cout << "Valor lido: " << valor << endl << endl;
 
             cout << "Deseja inserir outro endereço?"<<endl;
@@ -212,6 +212,7 @@ int main(){
 
         }else{
             cout<<"Endereço invalido para 16 bits"<<endl;
+            return 0;
         }
     }while(op3 != 2);
 

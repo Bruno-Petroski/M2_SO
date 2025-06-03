@@ -130,7 +130,7 @@ int main(){
             switch(op2){
                 // 256B
                 case 1:{
-                    // 8 Bits utilizados para páginas mais significativos
+                    // 24 Bits utilizados para páginas mais significativos
                     // 8 Bits utilizados para o deslocamento menos significativos
                     separaBits256B(end_Binario, pag, des);
                     tam_pagina = 256;
@@ -138,7 +138,7 @@ int main(){
                 }
                 // 1KB
                 case 2:{
-                    //  6 Bits utilizados para páginas mais significativos
+                    // 22 Bits utilizados para páginas mais significativos
                     // 10 Bits utilizados para o deslocamento menos significativos
                     separaBits1KB(end_Binario, pag, des);
                     tam_pagina = 1024;
@@ -146,7 +146,7 @@ int main(){
                 }
                 // 4KB
                 case 3:{
-                    //  4 Bits utilizados para páginas mais significativos
+                    // 20 Bits utilizados para páginas mais significativos
                     // 12 Bits utilizados para o deslocamento menos significativos
                     separaBits4KB(end_Binario, pag, des);
                     tam_pagina = 4096;
@@ -203,7 +203,7 @@ int main(){
             cout << "Endereço virtual: " << end_String << endl;
             cout << "Página: " << pag << endl;
             cout << "Deslocamento: " << des << endl;
-            cout << "Ação Tomada: " << acao << endl;
+            cout << "Ação tomada: " << acao << endl;
             cout << "Valor lido: " << valor << endl << endl;
 
             cout << "Deseja inserir outro endereço?"<<endl;
