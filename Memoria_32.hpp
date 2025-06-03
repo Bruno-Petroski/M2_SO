@@ -187,4 +187,46 @@ int lerBackingStore(int paginaBuscada) {
     return -1;
 }
 
+const int TAM_TP_H = 1024;
+
+struct PaginaH {
+    bool valid = false, accessed = false;
+    int frame = -1;
+};
+
+PaginaH* TP_4k[TAM_TP_H] = {nullptr};
+
+void procuraTP_4K(int pag1, int pag2, int &frame, bool &isPageHIT){
+    if (TP_4k[pag1] != nullptr and TP_4k[pag1][pag2].valid) {
+        isPageHIT = true;
+        frame = TP_4k[pag1][pag2].frame;
+        TP_4k[pag1][pag2].accessed = true;
+    } else {
+        isPageHIT = false;
+    }
+}
+
+void SwapPageFault_4K(int pag1, int pag2, int frameBS) {
+    if (TP_4k[pag1] == nullptr) {
+        TP_4k[pag1] = new PaginaH[TAM_TP_H];
+    }
+
+    TP_4k[pag1][pag2].frame = frameBS;
+    TP_4k[pag1][pag2].valid = true;
+    TP_4k[pag1][pag2].accessed = true;
+}
+
+void imprimeTP_4K() {
+    cout << "----------------------- Tabela de Páginas Hierárquica -----------------------" << endl;
+    for (int i = 0; i < TAM_TP_H; ++i) {
+        if (TP_4k[i] != nullptr) {
+            for (int j = 0; j < TAM_TP_H; ++j) {
+                if (TP_4k[i][j].valid) {
+                    cout << "Pag: " << j << ", Frame: " << TP_4k[i][j].frame << ", Accessed: " << TP_4k[i][j].accessed << endl;
+                }
+            }
+        }
+    }
+}
+
 #endif

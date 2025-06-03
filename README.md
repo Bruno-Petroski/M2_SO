@@ -74,3 +74,5 @@ Endereço = 58.000
 - Ação tomada: TLB Miss, Page Hit
 - Valor lido: 32
 
+### 32 BITS
+

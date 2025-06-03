@@ -39,21 +39,33 @@ void separaBits1KB(bitset<32> end_Binario, int &pag, int &des) {
     pag = (int)pag_Binario.to_ulong();
 }
 
-void separaBits4KB(bitset<32> end_Binario, int &pag, int &des) {
-
+void separaBits4KB(bitset<32> end_Binario, int &pag, int &pag1, int &pag2, int &des) {
+    bitset<10> pag1_Binario, pag2_Binario;
+    bitset<12> offsetBits;
     bitset<20> pag_Binario;
-    bitset<12> des_Binario;
+
 
     for (int i = 0; i < 12; i++) {
-        des_Binario[i] = end_Binario[i];
+        offsetBits[i] = end_Binario[i];
+    }
+
+    for (int i = 0; i < 10; i++) {
+        pag2_Binario[i] = end_Binario[i + 12];
+    }
+
+    for (int i = 0; i < 10; i++) {
+        pag1_Binario[i] = end_Binario[i + 22];
     }
 
     for (int i = 0; i < 20; i++) {
         pag_Binario[i] = end_Binario[i + 12];
     }
 
-    des = (int)des_Binario.to_ulong();
-    pag = (int)pag_Binario.to_ulong();
+    des = offsetBits.to_ulong();
+    pag2 = pag2_Binario.to_ulong();
+    pag1 = pag1_Binario.to_ulong();
+    pag = pag_Binario.to_ulong();
+
 }
 
 string lerMemoriaFisica(unsigned long endereco) {
@@ -80,8 +92,7 @@ int main(){
 
     do{
         if(isDebug){ 
-            imprimeTLB();
-            imprimeTP();
+            imprimeTP_4K();
         }
         if (!isDebug) system("clear");
 
@@ -126,7 +137,7 @@ int main(){
             cout << "Escolha: ";
             cin >> op2;
 
-            int pag, des, tam_pagina;
+            int pag, pag1, pag2, des, tam_pagina;
             switch(op2){
                 // 256B
                 case 1:{
@@ -148,7 +159,7 @@ int main(){
                 case 3:{
                     // 20 Bits utilizados para páginas mais significativos
                     // 12 Bits utilizados para o deslocamento menos significativos
-                    separaBits4KB(end_Binario, pag, des);
+                    separaBits4KB(end_Binario, pag, pag1, pag2, des);
                     tam_pagina = 4096;
                     break;
                 }
@@ -167,34 +178,63 @@ int main(){
 
             }else{
                 acao += "TLB Miss";
-
                 int pagTP, frameTP;
                 bool isPageHIT;
 
-                procuraTP(pag, pagTP, frameTP, isPageHIT);
-                if(isPageHIT){
-                    acao += ", Page Hit";
+                if(tam_pagina == 4096){
 
-                    insereTLB(pagTP, frameTP);
+                    procuraTP_4K(pag1, pag2, frameTP, isPageHIT);
+                    if(isPageHIT){
+                        acao += ", Page Hit";
+                        insereTLB(pag, frameTP);
 
-                    endArq = frameTP*tam_pagina + des;
-                    valor = lerMemoriaFisica(endArq);
-
-                }else{
-                    acao += ", Page Fault";
-
-                    int frameBS = lerBackingStore(pag);
-
-                    if (frameBS == -1) {
-                        acao += ", não encontrado na backing store";
-                    }else{
-                        acao += ", carregado da backing store";
-
-                        SwapPageFault(pag, frameBS);
-                        insereTLB(pag, frameBS);
-
-                        endArq = frameBS * tam_pagina + des;
+                        endArq = frameTP*tam_pagina + des;
                         valor = lerMemoriaFisica(endArq);
+
+                    }else{
+                        acao += ", Page Fault";
+
+                        int frameBS = lerBackingStore(pag);
+                        
+                        if (frameBS == -1) {
+                            acao += ", não encontrado na backing store";
+                        }else{
+                            acao += ", carregado da backing store";
+
+                            SwapPageFault_4K(pag1, pag2, frameBS);
+                            insereTLB(pag, frameBS);
+
+                            endArq = frameBS * tam_pagina + des;
+                            valor = lerMemoriaFisica(endArq);
+                        }
+                    }
+                }else{
+
+                    procuraTP(pag, pagTP, frameTP, isPageHIT);
+                    if(isPageHIT){
+                        acao += ", Page Hit";
+
+                        insereTLB(pagTP, frameTP);
+
+                        endArq = frameTP*tam_pagina + des;
+                        valor = lerMemoriaFisica(endArq);
+
+                    }else{
+                        acao += ", Page Fault";
+
+                        int frameBS = lerBackingStore(pag);
+
+                        if (frameBS == -1) {
+                            acao += ", não encontrado na backing store";
+                        }else{
+                            acao += ", carregado da backing store";
+
+                            SwapPageFault(pag, frameBS);
+                            insereTLB(pag, frameBS);
+
+                            endArq = frameBS * tam_pagina + des;
+                            valor = lerMemoriaFisica(endArq);
+                        }
                     }
                 }
             }
